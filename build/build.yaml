@@ -69,9 +69,20 @@ stages:
       env:
         ExternalApi__BaseUri: http://localhost:8080/
         ExternalApi__Endpoints__HealthCheck: ping
-    - task: DotNetCoreCLI@2
+    - task: CmdLine@2
       displayName: "Test Function App"
       inputs:
-        command: test
-        projects: "$(Build.SourcesDirectory)/test/**/*.csproj"
-        arguments: "-c $(Configuration)"
+        script: 'dotnet test $(Build.SourcesDirectory)/test/**/*.csproj -c $(Configuration) --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)\CoverageResults\coverage'
+      env:
+        Environment: Mountebank
+    - task: PublishTestResults@2
+      displayName: "Publish Test Results"
+      inputs:
+        testResultsFormat: VSTest
+        testResultsFiles: "$(System.DefaultWorkingDirectory)/TestResults/*.trx"
+        mergeTestResults: true
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: "cobertura"
+        summaryFileLocation: "$(System.DefaultWorkingDirectory)/CoverageResults/*.xml"
+        failIfCoverageEmpty: false

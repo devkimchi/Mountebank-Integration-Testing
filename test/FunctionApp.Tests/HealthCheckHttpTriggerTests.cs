@@ -26,16 +26,18 @@ namespace FunctionApp.Tests
     public class HealthCheckHttpTriggerTests
     {
         private const string Integration = "Integration";
+        private const string DefaultServerEnvironment = "Mountebank";
+        private const string EnvironmentVariable = "Environment";
 
         private ServerFixture _fixture;
 
         [TestInitialize]
         public void Init()
         {
-            var env = Environment.GetEnvironmentVariable("Environment");
+            var env = Environment.GetEnvironmentVariable(EnvironmentVariable);
             if (string.IsNullOrWhiteSpace(env))
             {
-                env = "Mountebank";
+                env = DefaultServerEnvironment;
             }
 
             this._fixture = ServerFixture.CreateInstance(env);
