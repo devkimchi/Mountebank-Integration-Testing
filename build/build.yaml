@@ -25,9 +25,6 @@ stages:
     displayName: Hosted VS2017
     pool:
       name: Hosted VS2017
-      demands:
-      - npm
-      - dotnet
     workspace:
       clean: all
     variables:
