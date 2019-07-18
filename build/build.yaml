@@ -1,0 +1,77 @@
+name: $(Version).$(rev:r)
+
+variables:
+- name: Version
+  value: "1.0.0"
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - ".editorconfig"
+    - ".gitignore"
+    - "README.md"
+    - "LICENSE"
+    - "*.sln"
+    - "**/*.csproj"
+
+stages:
+# Build Pipeline
+- stage: Build
+  jobs:
+  - job: HostedVs2017
+    displayName: Hosted VS2017
+    pool:
+      name: Hosted VS2017
+      demands:
+      - npm
+      - dotnet
+    workspace:
+      clean: all
+    variables:
+    - name: DotNetSdkVersion
+      value: "2.1.701"
+    - name: Configuration
+      value: Release
+    
+    steps:
+    - task: CmdLine@2
+      displayName: "Install MounteBank"
+      inputs:
+        script: "npm install -g mountebank"
+    - task: CmdLine@2
+      displayName: "Install Azure Functions CLI"
+      inputs:
+        script: "npm install -g azure-functions-core-tools --unsafe-perm true"
+    - task: DotNetCoreInstaller@0
+      displayName: "Install .NET Core SDK"
+      inputs:
+        version: $(DotNetSdkVersion)
+    - task: DotNetCoreCLI@2
+      displayName: "Restore NuGet Packages"
+      inputs:
+        command: restore
+        projects: "$(Build.SourcesDirectory)/*.sln"
+    - task: DotNetCoreCLI@2
+      displayName: "Build Function App"
+      inputs:
+        projects: "$(Build.SourcesDirectory)/*.sln"
+        arguments: "-c $(Configuration)"
+    - task: CmdLine@2
+      displayName: "Run MounteBank"
+      inputs:
+        script: "start /b mb --noLogFile"
+    - task: CmdLine@2
+      displayName: "Run Function App"
+      inputs:
+        script: |
+          cd $(Build.SourcesDirectory)\src\FunctionApp
+          start /b func host start
+    - task: DotNetCoreCLI@2
+      displayName: "Test Function App"
+      inputs:
+        command: test
+        projects: "$(Build.SourcesDirectory)/test/**/*.csproj"
+        arguments: "-c $(Configuration)"
