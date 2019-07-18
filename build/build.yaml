@@ -66,9 +66,9 @@ stages:
         script: |
           cd $(Build.SourcesDirectory)\src\FunctionApp
           start /b func host start --csharp
-        env:
-          ExternalApi__BaseUri: http://localhost:8080/
-          ExternalApi__Endpoints__HealthCheck: ping
+      env:
+        ExternalApi__BaseUri: http://localhost:8080/
+        ExternalApi__Endpoints__HealthCheck: ping
     - task: DotNetCoreCLI@2
       displayName: "Test Function App"
       inputs:
