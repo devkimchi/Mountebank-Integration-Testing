@@ -30,7 +30,7 @@ stages:
     variables:
     - name: DotNetSdkVersion
       value: "2.1.701"
-    - name: Configuration
+    - name: BuildConfiguration
       value: Release
     
     steps:
