@@ -174,7 +174,7 @@ stages:
             displayName: 'Publish E2E Test Results'
             inputs:
               testResultsFormat: VSTest
-              testResultsFiles: 'TestResults/*.trx'
+              testResultsFiles: '$(Pipeline.Workspace)/TestResults/*.trx'
               mergeTestResults: true
           - task: PowerShell@2
             displayName: 'Cancel Pipeline on Test Run Failure'
