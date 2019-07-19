@@ -1,6 +1,6 @@
-# Mountebank Integration Testing #
+# Mountebank Integration Testing on Azure Functions #
 
-This provides a sample code to make use of Mountebank for API integration testing.
+This provides a sample code to make use of Mountebank for API integration testing on Azure Functions.
 
 
 ## Contribution ##
