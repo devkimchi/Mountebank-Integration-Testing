@@ -82,6 +82,7 @@ stages:
     - task: PublishTestResults@2
       displayName: 'Publish Test Results'
       inputs:
+        testRunTitle: 'Unit/Integration Tests'
         testResultsFormat: VSTest
         testResultsFiles: '$(System.DefaultWorkingDirectory)/TestResults/*.trx'
         mergeTestResults: true
@@ -173,6 +174,7 @@ stages:
           - task: PublishTestResults@2
             displayName: 'Publish E2E Test Results'
             inputs:
+              testRunTitle: 'E2E Tests'
               testResultsFormat: VSTest
               testResultsFiles: '$(Pipeline.Workspace)/TestResults/*.trx'
               mergeTestResults: true

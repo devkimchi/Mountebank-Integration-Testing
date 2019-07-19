@@ -25,6 +25,7 @@ namespace FunctionApp.Tests
     [TestClass]
     public class HealthCheckHttpTriggerTests
     {
+        private const string CategoryIntegration = "Integration";
         private const string CategoryE2E = "E2E";
         private const string DefaultServerName = "Mountebank";
         private const string ServerNameKey = "ServerName";
@@ -97,6 +98,7 @@ namespace FunctionApp.Tests
         }
 
         [TestMethod]
+        [TestCategory(CategoryIntegration)]
         [TestCategory(CategoryE2E)]
         public async Task Given_Url_When_Invoked_Then_Trigger_Should_Return_Healthy()
         {
@@ -110,6 +112,7 @@ namespace FunctionApp.Tests
         }
 
         [TestMethod]
+        [TestCategory(CategoryIntegration)]
         public async Task Given_Url_When_Invoked_Then_Trigger_Should_Return_Unhealthy()
         {
             var uri = this._fixture.GetHealthCheckUrl(HttpStatusCode.InternalServerError);
