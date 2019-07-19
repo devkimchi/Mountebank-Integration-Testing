@@ -150,6 +150,8 @@ stages:
               azureSubscription: 'azure-resource-manager'
               appType: functionApp
               appName: $(FunctionAppName)
+              package: '$(Pipeline.Workspace)/app/FunctionApp'
+              deploymentMethod: runFromPackage
           - task: DotNetCoreInstaller@0
             displayName: 'Install .NET Core SDK'
             inputs:
@@ -157,7 +159,7 @@ stages:
           - task: CmdLine@2
             displayName: 'Run E2E Tests'
             inputs:
-              script: '-c $(BuildConfiguration) --filter:TestGroup=E2E --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults'
+              script: 'dotnet vstest $(Pipeline.Workspace)/e2e/FunctionApp.Tests/FunctionApp.Tests.dll -c $(BuildConfiguration) --filter:TestGroup=E2E --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults'
             continueOnError: true
             env:
               ServerName: FunctionApp
