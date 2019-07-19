@@ -55,7 +55,7 @@ stages:
       displayName: "Build Function App"
       inputs:
         projects: "$(Build.SourcesDirectory)/*.sln"
-        arguments: "-c $(Configuration)"
+        arguments: "-c $(BuildConfiguration)"
     - task: CmdLine@2
       displayName: "Run MounteBank"
       inputs:
@@ -72,7 +72,7 @@ stages:
     - task: CmdLine@2
       displayName: "Test Function App"
       inputs:
-        script: 'dotnet test $(Build.SourcesDirectory)\test\FunctionApp.Tests\FunctionApp.Tests.csproj -c $(Configuration) --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)\CoverageResults\coverage'
+        script: 'dotnet test $(Build.SourcesDirectory)\test\FunctionApp.Tests\FunctionApp.Tests.csproj -c $(BuildConfiguration) --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)\CoverageResults\coverage'
       env:
         Environment: Mountebank
     - task: PublishTestResults@2
@@ -86,3 +86,31 @@ stages:
         codeCoverageTool: "cobertura"
         summaryFileLocation: "$(System.DefaultWorkingDirectory)/CoverageResults/*.xml"
         failIfCoverageEmpty: false
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish Function App'
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: '$(System.DefaultWorkingDirectory)/src/FunctionApp/*.csproj'
+        arguments: '-c $(BuildConfiguration) -o $(Build.ArtifactStagingDirectory)/app'
+        zipAfterPublish: false
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish E2E Test App'
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: '$(System.DefaultWorkingDirectory)/test/FunctionApp.Tests/*.csproj'
+        arguments: '-c $(BuildConfiguration) -o $(Build.ArtifactStagingDirectory)/e2e'
+        zipAfterPublish: false
+# Release Pipeline
+# - stage: Release
+#   jobs:
+#   - deployment: HostedVs2017
+#     displayName: Hosted VS2017
+#     pool:
+#       name: Hosted VS2017
+#     environment: fncapp
+#     strategy:
+#       runOnce:
+#         deploy:
+#           steps:

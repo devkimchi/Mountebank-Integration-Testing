@@ -29,7 +29,7 @@ namespace FunctionApp.Tests.Fixtures
             imposter.AddStub().OnPathAndMethodEqual("/ping", Method.Get).ReturnsStatus(statusCode);
             this._client.Submit(imposter);
 
-            return "http://localhost:7071/ping";
+            return "http://localhost:7071/api/ping";
         }
     }
 }

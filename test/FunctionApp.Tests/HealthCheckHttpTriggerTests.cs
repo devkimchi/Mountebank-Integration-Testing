@@ -25,7 +25,7 @@ namespace FunctionApp.Tests
     [TestClass]
     public class HealthCheckHttpTriggerTests
     {
-        private const string Integration = "Integration";
+        private const string E2E = "E2E";
         private const string DefaultServerEnvironment = "Mountebank";
         private const string EnvironmentVariable = "Environment";
 
@@ -97,26 +97,25 @@ namespace FunctionApp.Tests
         }
 
         [TestMethod]
-        [TestCategory(Integration)]
+        [TestCategory(E2E)]
         public async Task Given_Url_When_Invoked_Then_Trigger_Should_Return_Healthy()
         {
             var uri = this._fixture.GetHealthCheckUrl();
 
             using (var http = new HttpClient())
-            using (var res = await http.GetAsync("http://localhost:7071/api/ping"))
+            using (var res = await http.GetAsync(uri))
             {
                 res.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
         [TestMethod]
-        [TestCategory(Integration)]
         public async Task Given_Url_When_Invoked_Then_Trigger_Should_Return_Unhealthy()
         {
             var uri = this._fixture.GetHealthCheckUrl(HttpStatusCode.InternalServerError);
 
             using (var http = new HttpClient())
-            using (var res = await http.GetAsync("http://localhost:7071/api/ping"))
+            using (var res = await http.GetAsync(uri))
             {
                 res.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             }
