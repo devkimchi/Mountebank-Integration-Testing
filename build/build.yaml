@@ -90,6 +90,7 @@ stages:
         testResultsFiles: '$(System.DefaultWorkingDirectory)/TestResults/*.trx'
         mergeTestResults: true
     - task: PublishCodeCoverageResults@1
+      displayName: 'Publish Code Coverage Results'
       inputs:
         codeCoverageTool: 'cobertura'
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/CoverageResults/*.xml'
@@ -118,6 +119,18 @@ stages:
         projects: '$(System.DefaultWorkingDirectory)/test/FunctionApp.Tests/*.csproj'
         arguments: '-c $(BuildConfiguration) -o $(Build.ArtifactStagingDirectory)/e2e'
         zipAfterPublish: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Function App Artifact'
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)/app
+        artifactName: app
+        publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish E2E Test App Artifact'
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)/e2e
+        artifactName: e2e
+        publishLocation: 'Container'
 # Release Pipeline
 # - stage: Release
 #   jobs:
