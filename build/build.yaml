@@ -1,8 +1,8 @@
 name: $(Version).$(rev:r)
 
 variables:
-- name: Version
-  value: '1.0.0'
+- group: 'Pipeline Common'
+- group: '.NET Core Common'
 
 trigger:
   branches:
@@ -28,10 +28,6 @@ stages:
     workspace:
       clean: all
     variables:
-    - name: DotNetSdkVersion
-      value: '2.1.701'
-    - name: BuildConfiguration
-      value: Release
     - name: TestRunStatus
       value: ''
     
@@ -47,7 +43,7 @@ stages:
     - task: DotNetCoreInstaller@0
       displayName: 'Install .NET Core SDK'
       inputs:
-        version: $(DotNetSdkVersion)
+        version: $(SdkVersion)
     - task: DotNetCoreCLI@2
       displayName: 'Restore NuGet Packages'
       inputs:
@@ -82,7 +78,7 @@ stages:
       displayName: 'Save Test Run Status'
       inputs:
         targetType: Inline
-        script: 'Write-Host '##vso[task.setvariable variable=TestRunStatus]$(Agent.JobStatus)''
+        script: 'Write-Host "##vso[task.setvariable variable=TestRunStatus]$(Agent.JobStatus)"'
     - task: PublishTestResults@2
       displayName: 'Publish Test Results'
       inputs:
@@ -132,14 +128,57 @@ stages:
         artifactName: e2e
         publishLocation: 'Container'
 # Release Pipeline
-# - stage: Release
-#   jobs:
-#   - deployment: HostedVs2017
-#     displayName: Hosted VS2017
-#     pool:
-#       name: Hosted VS2017
-#     environment: fncapp
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
+- stage: Release
+  jobs:
+  - deployment: HostedVs2017
+    displayName: Hosted VS2017
+    pool:
+      name: Hosted VS2017
+    environment: fncapp
+    variables:
+    - group: 'Function App'
+    - name: TestRunStatus
+      value: ''
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy Function App'
+            inputs:
+              azureSubscription: 'azure-resource-manager'
+              appType: functionApp
+              appName: $(FunctionAppName)
+          - task: DotNetCoreInstaller@0
+            displayName: 'Install .NET Core SDK'
+            inputs:
+              version: $(SdkVersion)
+          - task: CmdLine@2
+            displayName: 'Run E2E Tests'
+            inputs:
+              script: '-c $(BuildConfiguration) --filter:TestGroup=E2E --logger:trx --results-directory:$(System.DefaultWorkingDirectory)\TestResults'
+            continueOnError: true
+            env:
+              ServerName: FunctionApp
+              FunctionAuthKey: $(FunctionAuthKey)
+              FunctionAppName: $(FunctionAppName)
+          - task: PowerShell@2
+            displayName: 'Save Test Run Status'
+            inputs:
+              targetType: Inline
+              script: 'Write-Host "##vso[task.setvariable variable=TestRunStatus]$(Agent.JobStatus)"'
+          - task: PublishTestResults@2
+            displayName: 'Publish E2E Test Results'
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: 'TestResults/*.trx'
+              mergeTestResults: true
+          - task: PowerShell@2
+            displayName: 'Cancel Pipeline on Test Run Failure'
+            condition: and(succeeded(), or(eq(variables['TestRunStatus'], 'Failed'), eq(variables['TestRunStatus'], 'SucceededWithIssues')))
+            inputs:
+              targetType: Inline
+              script: |
+                Write-Host "##vso[task.setvariable variable=Agent.JobStatus]Failed"
+                Write-Host "##vso[task.complete result=Failed]DONE"
