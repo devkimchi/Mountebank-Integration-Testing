@@ -24,9 +24,9 @@ namespace FunctionApp.Tests.Fixtures
         public override string GetHealthCheckUrl(HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             this._client.DeleteImposter(8080);
-            var imposter = this._client.CreateHttpImposter(8080, "OK");
+            var imposter = this._client.CreateHttpImposter(8080, statusCode.ToString());
 
-            imposter.AddStub().OnPathAndMethodEqual("/ping", Method.Get).ReturnsStatus(statusCode);
+            imposter.AddStub().OnPathAndMethodEqual("/api/ping", Method.Get).ReturnsStatus(statusCode);
             this._client.Submit(imposter);
 
             return "http://localhost:7071/api/ping";

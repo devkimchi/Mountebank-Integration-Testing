@@ -11,11 +11,11 @@ namespace FunctionApp.Tests.Fixtures
         /// <summary>
         /// Creates a new instance of the <see cref="ServerFixture"/> class.
         /// </summary>
-        /// <param name="env">Mocking environment.</param>
+        /// <param name="serverName">Mocking server name.</param>
         /// <returns>Returns the new instance of the <see cref="ServerFixture"/> class.</returns>
-        public static ServerFixture CreateInstance(string env)
+        public static ServerFixture CreateInstance(string serverName)
         {
-            var type = Type.GetType($"FunctionApp.Tests.Fixtures.{env}ServerFixture");
+            var type = Type.GetType($"FunctionApp.Tests.Fixtures.{serverName}ServerFixture");
             var instance = (ServerFixture)Activator.CreateInstance(type);
 
             return instance;

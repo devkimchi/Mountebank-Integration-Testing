@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -81,34 +81,34 @@ namespace FunctionApp.Tests.Functions
                     .StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
-        //[TestMethod]
-        //public async Task Given_Parameters_When_Invoked_With_Error_Then_InvokeAsync_Should_Return_Result()
-        //{
-        //    var endpoints = new Mock<EndpointsSettings>();
-        //    endpoints.SetupGet(p => p.HealthCheck).Returns("ping");
+        [TestMethod]
+        public async Task Given_Parameters_When_Invoked_With_Error_Then_InvokeAsync_Should_Return_Result()
+        {
+            var endpoints = new Mock<EndpointsSettings>();
+            endpoints.SetupGet(p => p.HealthCheck).Returns("ping");
 
-        //    var settings = new Mock<ExternalApiSettings>();
-        //    settings.SetupGet(p => p.BaseUri).Returns("http://localhost");
-        //    settings.SetupGet(p => p.Endpoints).Returns(endpoints.Object);
+            var settings = new Mock<ExternalApiSettings>();
+            settings.SetupGet(p => p.BaseUri).Returns("http://localhost");
+            settings.SetupGet(p => p.Endpoints).Returns(endpoints.Object);
 
-        //    var message = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-        //    var options = new HttpMessageOptions()
-        //                      {
-        //                          HttpMethod = HttpMethod.Get,
-        //                          HttpResponseMessage = message
-        //                      };
-        //    var handler = new FakeHttpMessageHandler(options);
-        //    var httpClient = new HttpClient(handler);
-        //    var function = new HealthCheckFunction(settings.Object, httpClient);
+            var message = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            var options = new HttpMessageOptions()
+            {
+                HttpMethod = HttpMethod.Get,
+                HttpResponseMessage = message
+            };
+            var handler = new FakeHttpMessageHandler(options);
+            var httpClient = new HttpClient(handler);
+            var function = new HealthCheckFunction(settings.Object, httpClient);
 
-        //    var req = new Mock<HttpRequest>();
-        //    var result = await function.InvokeAsync<HttpRequest, IActionResult>(req.Object)
-        //                               .ConfigureAwait(false);
+            var req = new Mock<HttpRequest>();
+            var result = await function.InvokeAsync<HttpRequest, IActionResult>(req.Object)
+                                       .ConfigureAwait(false);
 
-        //    result
-        //        .Should().BeOfType<ObjectResult>()
-        //        .And.Subject.As<ObjectResult>()
-        //            .StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-        //}
+            result
+                .Should().BeOfType<ObjectResult>()
+                .And.Subject.As<ObjectResult>()
+                    .StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        }
     }
 }

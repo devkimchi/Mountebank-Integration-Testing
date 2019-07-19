@@ -25,22 +25,22 @@ namespace FunctionApp.Tests
     [TestClass]
     public class HealthCheckHttpTriggerTests
     {
-        private const string E2E = "E2E";
-        private const string DefaultServerEnvironment = "Mountebank";
-        private const string EnvironmentVariable = "Environment";
+        private const string CategoryE2E = "E2E";
+        private const string DefaultServerName = "Mountebank";
+        private const string ServerNameKey = "ServerName";
 
         private ServerFixture _fixture;
 
         [TestInitialize]
         public void Init()
         {
-            var env = Environment.GetEnvironmentVariable(EnvironmentVariable);
-            if (string.IsNullOrWhiteSpace(env))
+            var serverName = Environment.GetEnvironmentVariable(ServerNameKey);
+            if (string.IsNullOrWhiteSpace(serverName))
             {
-                env = DefaultServerEnvironment;
+                serverName = DefaultServerName;
             }
 
-            this._fixture = ServerFixture.CreateInstance(env);
+            this._fixture = ServerFixture.CreateInstance(serverName);
         }
 
         [TestMethod]
@@ -97,7 +97,7 @@ namespace FunctionApp.Tests
         }
 
         [TestMethod]
-        [TestCategory(E2E)]
+        [TestCategory(CategoryE2E)]
         public async Task Given_Url_When_Invoked_Then_Trigger_Should_Return_Healthy()
         {
             var uri = this._fixture.GetHealthCheckUrl();
