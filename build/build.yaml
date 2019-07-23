@@ -85,7 +85,7 @@ stages:
         testRunTitle: 'Unit Tests'
         testResultsFormat: VSTest
         testResultsFiles: '$(System.DefaultWorkingDirectory)/TestResults/*.trx'
-        mergeTestResults: true
+        mergeTestResults: false
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish Code Coverage Results'
       inputs:
@@ -110,7 +110,7 @@ stages:
         testRunTitle: 'Integration Tests'
         testResultsFormat: VSTest
         testResultsFiles: '$(System.DefaultWorkingDirectory)/TestResults/*.trx'
-        mergeTestResults: true
+        mergeTestResults: false
     - task: PowerShell@2
       displayName: 'Cancel Pipeline on Test Run Failure'
       condition: and(succeeded(), or(eq(variables['TestRunStatus'], 'Failed'), eq(variables['TestRunStatus'], 'SucceededWithIssues')))
@@ -196,7 +196,7 @@ stages:
               testRunTitle: 'E2E Tests'
               testResultsFormat: VSTest
               testResultsFiles: '$(Pipeline.Workspace)/TestResults/*.trx'
-              mergeTestResults: true
+              mergeTestResults: false
           - task: PowerShell@2
             displayName: 'Cancel Pipeline on Test Run Failure'
             condition: and(succeeded(), or(eq(variables['TestRunStatus'], 'Failed'), eq(variables['TestRunStatus'], 'SucceededWithIssues')))
