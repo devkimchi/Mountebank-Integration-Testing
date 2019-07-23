@@ -27,7 +27,7 @@ namespace FunctionApp.Tests
     {
         private const string CategoryIntegration = "Integration";
         private const string CategoryE2E = "E2E";
-        private const string DefaultServerName = "Mountebank";
+        private const string DefaultServerName = "Localhost";
         private const string ServerNameKey = "ServerName";
 
         private ServerFixture _fixture;

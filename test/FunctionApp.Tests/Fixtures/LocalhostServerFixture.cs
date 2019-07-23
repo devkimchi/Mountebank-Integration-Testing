@@ -6,16 +6,16 @@ using MbDotNet.Enums;
 namespace FunctionApp.Tests.Fixtures
 {
     /// <summary>
-    /// This represents the fixture entity for the Mountebank server.
+    /// This represents the fixture entity for the localhost server.
     /// </summary>
-    public class MountebankServerFixture : ServerFixture
+    public class LocalhostServerFixture : ServerFixture
     {
         private readonly MountebankClient _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MountebankServerFixture"/> class.
+        /// Initializes a new instance of the <see cref="LocalhostServerFixture"/> class.
         /// </summary>
-        public MountebankServerFixture()
+        public LocalhostServerFixture()
         {
             this._client = new MountebankClient();
         }
