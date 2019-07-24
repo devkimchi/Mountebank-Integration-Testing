@@ -28,7 +28,9 @@ stages:
     workspace:
       clean: all
     variables:
-    - name: TestRunStatus
+    - name: UnitTestRunStatus
+      value: ''
+    - name: IntegrationTestRunStatus
       value: ''
     
     steps:
@@ -78,7 +80,7 @@ stages:
       displayName: 'Save Unit Test Run Status'
       inputs:
         targetType: Inline
-        script: 'Write-Host "##vso[task.setvariable variable=TestRunStatus]$(Agent.JobStatus)"'
+        script: 'Write-Host "##vso[task.setvariable variable=UnitTestRunStatus]$(Agent.JobStatus)"'
     - task: PublishTestResults@2
       displayName: 'Publish Unit Test Results'
       inputs:
@@ -103,7 +105,7 @@ stages:
       displayName: 'Save Integration Test Run Status'
       inputs:
         targetType: Inline
-        script: 'Write-Host "##vso[task.setvariable variable=TestRunStatus]$(Agent.JobStatus)"'
+        script: 'Write-Host "##vso[task.setvariable variable=IntegrationTestRunStatus]$(Agent.JobStatus)"'
     - task: PublishTestResults@2
       displayName: 'Publish Integration Test Results'
       inputs:
@@ -113,7 +115,7 @@ stages:
         mergeTestResults: true
     - task: PowerShell@2
       displayName: 'Cancel Pipeline on Test Run Failure'
-      condition: and(succeeded(), or(eq(variables['TestRunStatus'], 'Failed'), eq(variables['TestRunStatus'], 'SucceededWithIssues')))
+      condition: and(succeeded(), or(eq(variables['UnitTestRunStatus'], 'Failed'), eq(variables['UnitTestRunStatus'], 'SucceededWithIssues'), eq(variables['IntegrationTestRunStatus'], 'Failed'), eq(variables['IntegrationTestRunStatus'], 'SucceededWithIssues')))
       inputs:
         targetType: Inline
         script: |
